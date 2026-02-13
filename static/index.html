@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Attendance Management System - Track, manage, and analyze student attendance efficiently">
+    <title>Student Attendance System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ==================== LOGIN PAGE ==================== -->
+    <div id="login-page" class="login-page">
+        <div class="login-bg">
+            <div class="login-shape shape-1"></div>
+            <div class="login-shape shape-2"></div>
+            <div class="login-shape shape-3"></div>
+        </div>
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-icon">
+                        <span class="material-icons-round">school</span>
+                    </div>
+                    <h1>Student Attendance</h1>
+                    <p>Management System</p>
+                </div>
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <span class="material-icons-round input-icon">person</span>
+                        <input type="text" id="login-username" placeholder="Username" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <span class="material-icons-round input-icon">lock</span>
+                        <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+                        <span class="material-icons-round toggle-password" onclick="togglePassword()">visibility_off</span>
+                    </div>
+                    <div id="login-error" class="login-error"></div>
+                    <button type="submit" class="btn-login" id="login-btn">
+                        <span>Sign In</span>
+                        <span class="material-icons-round">arrow_forward</span>
+                    </button>
+                    <div class="login-hint">
+                        <span class="material-icons-round">info</span>
+                        Default: admin / admin123
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APP ==================== -->
+    <div id="app" class="app hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="material-icons-round">school</span>
+                    <div>
+                        <h2>Attendance</h2>
+                        <span>Management System</span>
+                    </div>
+                </div>
+                <button id="sidebar-close" class="sidebar-close" onclick="toggleSidebar()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                    <span class="material-icons-round">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="students" onclick="navigateTo('students')">
+                    <span class="material-icons-round">people</span>
+                    <span>Students</span>
+                </a>
+                <a href="#" class="nav-item" data-page="attendance" onclick="navigateTo('attendance')">
+                    <span class="material-icons-round">fact_check</span>
+                    <span>Mark Attendance</span>
+                </a>
+                <a href="#" class="nav-item" data-page="reports" onclick="navigateTo('reports')">
+                    <span class="material-icons-round">assessment</span>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-item" data-page="classes" onclick="navigateTo('classes')">
+                    <span class="material-icons-round">class</span>
+                    <span>Classes</span>
+                </a>
+                <a href="#" class="nav-item" data-page="notices" onclick="navigateTo('notices')">
+                    <span class="material-icons-round">campaign</span>
+                    <span>Notices</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings" onclick="navigateTo('settings')">
+                    <span class="material-icons-round">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span class="material-icons-round">account_circle</span>
+                    </div>
+                    <div class="user-details">
+                        <span id="sidebar-username" class="user-name">Admin</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()">
+                        <span class="material-icons-round">menu</span>
+                    </button>
+                    <div>
+                        <h1 id="page-title">Dashboard</h1>
+                        <p id="page-subtitle" class="topbar-date"></p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="topbar-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                        <span class="material-icons-round">dark_mode</span>
+                    </button>
+                    <button class="topbar-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                        <span class="material-icons-round">fullscreen</span>
+                    </button>
+                    <button class="topbar-btn" onclick="logout()" title="Logout">
+                        <span class="material-icons-round">logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Pages -->
+            <div class="content-wrapper">
+
+                <!-- ==================== DASHBOARD PAGE ==================== -->
+                <section id="page-dashboard" class="page active">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card stat-students">
+                            <div class="stat-icon">
+                                <span class="material-icons-round">groups</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="stat-total-students">0</h3>
+                                <p>Total Students</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <span class="material-icons-round">trending_up</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-present">
+                            <div class="stat-icon">
+                                <span class="material-icons-round">check_circle</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="stat-present">0</h3>
+                                <p>Present Today</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <span class="material-icons-round">trending_up</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-absent">
+                            <div class="stat-icon">
+                                <span class="material-icons-round">cancel</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="stat-absent">0</h3>
+                                <p>Absent Today</p>
+                            </div>
+                            <div class="stat-trend down">
+                                <span class="material-icons-round">trending_down</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-rate">
+                            <div class="stat-icon">
+                                <span class="material-icons-round">speed</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="stat-rate">0%</h3>
+                                <p>Attendance Rate</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <span class="material-icons-round">trending_up</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">bar_chart</span> Weekly Attendance Trend</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="weekly-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">pie_chart</span> Attendance Distribution</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="distribution-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row -->
+                    <div class="bottom-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">leaderboard</span> Class-wise Attendance</h3>
+                            </div>
+                            <div id="class-wise-list" class="class-wise-list"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">history</span> Recent Activity</h3>
+                            </div>
+                            <div id="recent-activity" class="activity-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== STUDENTS PAGE ==================== -->
+                <section id="page-students" class="page">
+                    <div class="page-actions">
+                        <div class="search-box">
+                            <span class="material-icons-round">search</span>
+                            <input type="text" id="student-search" placeholder="Search students..." oninput="searchStudents()">
+                        </div>
+                        <div class="filter-group">
+                            <select id="student-class-filter" onchange="filterStudents()">
+                                <option value="">All Classes</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="showAddStudentModal()">
+                            <span class="material-icons-round">person_add</span>
+                            <span>Add Student</span>
+                        </button>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Gender</th>
+                                        <th>Phone</th>
+                                        <th>Attendance</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="students-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="students-empty" class="empty-state hidden">
+                            <span class="material-icons-round">person_search</span>
+                            <p>No students found</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== MARK ATTENDANCE PAGE ==================== -->
+                <section id="page-attendance" class="page">
+                    <div class="page-actions">
+                        <div class="filter-group">
+                            <div class="date-picker-group">
+                                <span class="material-icons-round">calendar_today</span>
+                                <input type="date" id="attendance-date" onchange="loadAttendanceForDate()">
+                            </div>
+                            <select id="attendance-class-filter" onchange="loadAttendanceForDate()">
+                                <option value="">All Classes</option>
+                            </select>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="btn btn-sm btn-success" onclick="markAllPresent()">
+                                <span class="material-icons-round">done_all</span>
+                                All Present
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="markAllAbsent()">
+                                <span class="material-icons-round">close</span>
+                                All Absent
+                            </button>
+                            <button class="btn btn-primary" onclick="saveAttendance()" id="save-attendance-btn">
+                                <span class="material-icons-round">save</span>
+                                <span>Save Attendance</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="attendance-summary-bar">
+                        <div class="att-stat present">
+                            <span class="material-icons-round">check_circle</span>
+                            Present: <strong id="att-present-count">0</strong>
+                        </div>
+                        <div class="att-stat absent">
+                            <span class="material-icons-round">cancel</span>
+                            Absent: <strong id="att-absent-count">0</strong>
+                        </div>
+                        <div class="att-stat late">
+                            <span class="material-icons-round">schedule</span>
+                            Late: <strong id="att-late-count">0</strong>
+                        </div>
+                        <div class="att-stat total">
+                            <span class="material-icons-round">people</span>
+                            Total: <strong id="att-total-count">0</strong>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Class</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendance-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== REPORTS PAGE ==================== -->
+                <section id="page-reports" class="page">
+                    <div class="page-actions">
+                        <div class="filter-group">
+                            <div class="date-picker-group">
+                                <span class="material-icons-round">date_range</span>
+                                <input type="date" id="report-from-date">
+                                <span class="date-separator">to</span>
+                                <input type="date" id="report-to-date">
+                            </div>
+                            <select id="report-class-filter">
+                                <option value="">All Classes</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="generateReport()">
+                                <span class="material-icons-round">assessment</span>
+                                <span>Generate Report</span>
+                            </button>
+                            <button class="btn btn-success" onclick="exportReport()">
+                                <span class="material-icons-round">download</span>
+                                <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="report-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Total Days</th>
+                                        <th>Present</th>
+                                        <th>Absent</th>
+                                        <th>Late</th>
+                                        <th>Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="report-empty" class="empty-state">
+                            <span class="material-icons-round">analytics</span>
+                            <p>Select filters and click "Generate Report"</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== CLASSES PAGE ==================== -->
+                <section id="page-classes" class="page">
+                    <div class="page-actions">
+                        <h2 style="margin:0;">Manage Classes & Sections</h2>
+                        <button class="btn btn-primary" onclick="showAddClassModal()">
+                            <span class="material-icons-round">add</span>
+                            <span>Add Class</span>
+                        </button>
+                    </div>
+                    <div class="classes-grid" id="classes-grid"></div>
+                </section>
+
+                <!-- ==================== NOTICES PAGE ==================== -->
+                <section id="page-notices" class="page">
+                    <div class="page-actions">
+                        <h2 style="margin:0;">Notice Board</h2>
+                        <button class="btn btn-primary" onclick="showAddNoticeModal()">
+                            <span class="material-icons-round">add_circle</span>
+                            <span>Add Notice</span>
+                        </button>
+                    </div>
+                    <div class="notices-list" id="notices-list"></div>
+                </section>
+
+                <!-- ==================== SETTINGS PAGE ==================== -->
+                <section id="page-settings" class="page">
+                    <div class="settings-grid">
+                        <div class="card settings-card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">palette</span> Appearance</h3>
+                            </div>
+                            <div class="settings-body">
+                                <div class="setting-item">
+                                    <div>
+                                        <h4>Dark Mode</h4>
+                                        <p>Switch between light and dark theme</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="dark-mode-toggle" onchange="toggleTheme()">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div>
+                                        <h4>Accent Color</h4>
+                                        <p>Choose your preferred accent color</p>
+                                    </div>
+                                    <div class="color-options">
+                                        <button class="color-btn active" style="background: rgb(99, 102, 241);" onclick="setAccent('indigo')"></button>
+                                        <button class="color-btn" style="background: rgb(16, 185, 129);" onclick="setAccent('emerald')"></button>
+                                        <button class="color-btn" style="background: rgb(244, 63, 94);" onclick="setAccent('rose')"></button>
+                                        <button class="color-btn" style="background: rgb(245, 158, 11);" onclick="setAccent('amber')"></button>
+                                        <button class="color-btn" style="background: rgb(6, 182, 212);" onclick="setAccent('cyan')"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card settings-card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">lock</span> Change Password</h3>
+                            </div>
+                            <div class="settings-body">
+                                <form id="change-password-form" onsubmit="changePassword(event)">
+                                    <div class="form-group-vertical">
+                                        <label>Current Password</label>
+                                        <input type="password" id="old-password" required>
+                                    </div>
+                                    <div class="form-group-vertical">
+                                        <label>New Password</label>
+                                        <input type="password" id="new-password" required>
+                                    </div>
+                                    <div class="form-group-vertical">
+                                        <label>Confirm New Password</label>
+                                        <input type="password" id="confirm-password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <span class="material-icons-round">save</span>
+                                        Update Password
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card settings-card">
+                            <div class="card-header">
+                                <h3><span class="material-icons-round">info</span> System Info</h3>
+                            </div>
+                            <div class="settings-body">
+                                <div class="info-item">
+                                    <span>Version</span>
+                                    <span>2.0.0</span>
+                                </div>
+                                <div class="info-item">
+                                    <span>Backend</span>
+                                    <span>Python Flask</span>
+                                </div>
+                                <div class="info-item">
+                                    <span>Database</span>
+                                    <span>SQLite</span>
+                                </div>
+                                <div class="info-item">
+                                    <span>Frontend</span>
+                                    <span>HTML/CSS/JS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+    
+    <!-- Student Modal -->
+    <div id="student-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="student-modal-title">Add Student</h2>
+                <button class="modal-close" onclick="closeModal('student-modal')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="student-form" onsubmit="saveStudent(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="student-id">
+                    <div class="form-row">
+                        <div class="form-group-vertical">
+                            <label>Roll Number *</label>
+                            <input type="text" id="student-roll" required>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label>Class *</label>
+                            <select id="student-class" required></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-vertical">
+                            <label>First Name *</label>
+                            <input type="text" id="student-fname" required>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label>Last Name *</label>
+                            <input type="text" id="student-lname" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-vertical">
+                            <label>Gender</label>
+                            <select id="student-gender">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label>Date of Birth</label>
+                            <input type="date" id="student-dob">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-vertical">
+                            <label>Email</label>
+                            <input type="email" id="student-email">
+                        </div>
+                        <div class="form-group-vertical">
+                            <label>Phone</label>
+                            <input type="tel" id="student-phone">
+                        </div>
+                    </div>
+                    <div class="form-group-vertical">
+                        <label>Address</label>
+                        <textarea id="student-address" rows="2"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-vertical">
+                            <label>Parent/Guardian Name</label>
+                            <input type="text" id="student-parent">
+                        </div>
+                        <div class="form-group-vertical">
+                            <label>Parent Phone</label>
+                            <input type="tel" id="student-parent-phone">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('student-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons-round">save</span>
+                        Save Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Student Detail Modal -->
+    <div id="student-detail-modal" class="modal-overlay">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h2>Student Details</h2>
+                <button class="modal-close" onclick="closeModal('student-detail-modal')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="student-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div id="class-modal" class="modal-overlay">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h2>Add Class</h2>
+                <button class="modal-close" onclick="closeModal('class-modal')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="class-form" onsubmit="saveClass(event)">
+                <div class="modal-body">
+                    <div class="form-group-vertical">
+                        <label>Class Name *</label>
+                        <input type="text" id="class-name" placeholder="e.g., 10" required>
+                    </div>
+                    <div class="form-group-vertical">
+                        <label>Section *</label>
+                        <input type="text" id="class-section" placeholder="e.g., A" required>
+                    </div>
+                    <div class="form-group-vertical">
+                        <label>Teacher Name</label>
+                        <input type="text" id="class-teacher" placeholder="e.g., Mrs. Sharma">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('class-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons-round">save</span>
+                        Save Class
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notice Modal -->
+    <div id="notice-modal" class="modal-overlay">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h2>Add Notice</h2>
+                <button class="modal-close" onclick="closeModal('notice-modal')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="notice-form" onsubmit="saveNotice(event)">
+                <div class="modal-body">
+                    <div class="form-group-vertical">
+                        <label>Title *</label>
+                        <input type="text" id="notice-title" required>
+                    </div>
+                    <div class="form-group-vertical">
+                        <label>Content *</label>
+                        <textarea id="notice-content" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group-vertical">
+                        <label>Priority</label>
+                        <select id="notice-priority">
+                            <option value="normal">Normal</option>
+                            <option value="high">High</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('notice-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons-round">save</span>
+                        Post Notice
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="material-icons-round toast-icon">check_circle</span>
+        <span id="toast-message">Success!</span>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
